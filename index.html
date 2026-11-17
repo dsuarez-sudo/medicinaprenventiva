@@ -606,7 +606,8 @@ h2.tit{font-size:19px;margin:22px 0 10px;font-weight:700}
 const CONFIG = {
   URL_SCRIPT: 'https://script.google.com/macros/s/AKfycbzEDnzuBjtvg4eWm_CjBFCOQL8CgbbEnl66XkDJntOek4Ly9Cbp0J1K2ZoKGHOh9tI/exec', // URL de Apps Script (termina en /exec)
   NOTA_MINIMA: 80,        // porcentaje para aprobar
-  PREGUNTAS: 15,          // preguntas del reto final (mínimo 9: una por tema)
+  // Preguntas de la evaluación final por módulo (en el orden de los módulos). Total: 15
+  PREGUNTAS_POR_MODULO: [2,1,2,1,2,2,1,2,2],
   VIGENCIA_MESES: 10,     // meses de vigencia de la capacitación aprobada; luego debe repetirse
   EXIGIR_MISIONES: true   // true = la evaluación se habilita al completar los 9 módulos
 };
@@ -1188,7 +1189,7 @@ function menu(){
   document.getElementById('btn-eval').innerHTML=listo?'Presentar evaluación '+ico('der'):ico('candado')+' Bloqueada';
   document.getElementById('fbar').style.width=pct+'%';
   document.getElementById('final-desc').textContent= listo
-    ? CONFIG.PREGUNTAS+' preguntas de todos los módulos. Para aprobar necesita mínimo '+CONFIG.NOTA_MINIMA+' %.'
+    ? CONFIG.PREGUNTAS_POR_MODULO.reduce((a,b)=>a+b,0)+' preguntas de todos los módulos. Para aprobar necesita mínimo '+CONFIG.NOTA_MINIMA+' %.'
     : 'Se habilita al completar los '+t+' módulos. Lleva '+v+' de '+t+'.';
   show('s-menu');
 }
@@ -1692,10 +1693,10 @@ function verTermino(k){
 /* ================= RETO FINAL ================= */
 let E=null;
 function iniciarEval(){
-  let todas=[]; const elegidas=[];
-  MISIONES.forEach((m,mi)=>{ const qs=mezclar(m.preguntas.map(p=>({mi,p}))); elegidas.push(qs[0]); todas=todas.concat(qs.slice(1)); });
-  const extra=mezclar(todas).slice(0, Math.max(0, CONFIG.PREGUNTAS-elegidas.length));
-  const lista=mezclar(elegidas.concat(extra)).slice(0,CONFIG.PREGUNTAS).map(o=>({mi:o.mi, q:o.p.q, e:o.p.e||'', ops:mezclar(o.p.ops.map((t,k)=>({t,ok:k===0})))}));
+  // Siempre las mismas preguntas y en el mismo orden (como un formulario); solo cambian de orden las opciones
+  const lista=[];
+  MISIONES.forEach((m,mi)=>{ m.preguntas.slice(0, CONFIG.PREGUNTAS_POR_MODULO[mi]||1).forEach(p=>{
+    lista.push({mi, q:p.q, e:p.e||'', ops:mezclar(p.ops.map((t,k)=>({t,ok:k===0})))}); }); });
   E={preguntas:lista, resp:[], i:0, racha:0, inicio:Date.now()};
   show('s-eval'); pintarQ();
 }
