@@ -153,6 +153,10 @@ input:focus,select:focus{outline:none;border-color:var(--azul2)}
 .vig.pronto{background:#fff6e6;border-color:#f0d49b;border-left-color:#d18600;color:#6b4a00}
 .vig.pronto b{color:#6b4a00}.vig.pronto .vi{background:#d18600}
 
+.vig>div{flex:1}
+.vig-btn{margin-top:10px;background:var(--ok);padding:10px 16px;font-size:14px}
+.vig.pronto .vig-btn{background:#b07200}
+
 /* encabezado de módulo */
 .m-head{border-radius:var(--r) var(--r) 0 0;color:#fff;padding:16px 18px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
 .m-head::after{content:"";position:absolute;right:-30px;top:-50px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.1)}
@@ -1073,12 +1077,13 @@ function guardar(sinSync){
 }
 const CLAVE_MAPA='hseq_avance_por_cedula';
 function leerMapa(){ try{ return JSON.parse(localStorage.getItem(CLAVE_MAPA))||{}; }catch(e){ return {}; } }
-function avanceDe(x){ return {completas:x.completas||[], hechos:x.hechos||[], puntos:x.puntos||0, intentos:x.intentos||0, aprobadoEl:x.aprobadoEl||null}; }
+function avanceDe(x){ return {completas:x.completas||[], hechos:x.hechos||[], puntos:x.puntos||0, intentos:x.intentos||0, aprobadoEl:x.aprobadoEl||null, ultimaConst:x.ultimaConst||null}; }
 function unir(a,b){ // combina dos avances sin perder nada
   a=avanceDe(a||{}); b=avanceDe(b||{});
   const u=(p,q)=>Array.from(new Set(p.concat(q)));
   const ap=[a.aprobadoEl,b.aprobadoEl].filter(Boolean).sort().pop()||null;
-  return {completas:u(a.completas,b.completas), hechos:u(a.hechos,b.hechos), puntos:Math.max(a.puntos,b.puntos), intentos:Math.max(a.intentos,b.intentos), aprobadoEl:ap};
+  const uc=[a.ultimaConst,b.ultimaConst].filter(Boolean).sort((p,q)=>String(p.fecha).localeCompare(String(q.fecha))).pop()||null;
+  return {completas:u(a.completas,b.completas), hechos:u(a.hechos,b.hechos), puntos:Math.max(a.puntos,b.puntos), intentos:Math.max(a.intentos,b.intentos), aprobadoEl:ap, ultimaConst:uc};
 }
 /* ----- vigencia de la capacitación ----- */
 function venceEl(iso){ if(!iso) return null; const d=new Date(iso); d.setMonth(d.getMonth()+CONFIG.VIGENCIA_MESES); return d.toISOString(); }
@@ -1087,7 +1092,7 @@ function revisarVigencia(){ // si ya venció, reinicia el avance para que la rea
   if(!S.usuario || !S.aprobadoEl) return false;
   const v=venceEl(S.aprobadoEl);
   if(new Date()<new Date(v)) return false;
-  Object.assign(S,{completas:[],hechos:[],puntos:0,intentos:0,aprobadoEl:null,_reinicio:true});
+  Object.assign(S,{completas:[],hechos:[],puntos:0,intentos:0,aprobadoEl:null,ultimaConst:null,_reinicio:true});
   guardar();
   aviso('Su capacitación venció el '+fechaLarga(v)+'. Debe realizar nuevamente los 9 módulos y la evaluación.','Capacitación vencida');
   return true;
@@ -1173,7 +1178,7 @@ function menu(){
   if(S.aprobadoEl){
     const v=venceEl(S.aprobadoEl), dias=Math.ceil((new Date(v)-new Date())/864e5);
     vg.innerHTML=`<div class="vig ${dias<=30?'pronto':''}"><span class="vi">${ico('certificado')}</span><div><b>Capacitación aprobada el ${fechaLarga(S.aprobadoEl)}</b>
-      ${dias<=30?`Vence en ${dias} día${dias===1?'':'s'} (${fechaLarga(v)}). Al vencer deberá realizarla nuevamente.`:`Vigente hasta el ${fechaLarga(v)}. Puede repasar los módulos cuando quiera.`}</div></div>`;
+      ${dias<=30?`Vence en ${dias} día${dias===1?'':'s'} (${fechaLarga(v)}). Al vencer deberá realizarla nuevamente.`:`Vigente hasta el ${fechaLarga(v)}. Puede repasar los módulos cuando quiera.`}${S.ultimaConst?`<button class="btn vig-btn" onclick="verConstancia()">${ico('certificado')} Ver mi constancia</button>`:''}</div></div>`;
   } else vg.innerHTML='';
   document.getElementById('mapa').innerHTML=MISIONES.map((m,i)=>{
     const ok=S.completas.includes(i), n=m.slides.length+1;
@@ -1732,13 +1737,41 @@ function finalizar(){
     respuestas.push({modulo:MISIONES[p.mi].titulo, pregunta:p.q, respuesta:p.ops[E.resp[i]].t, correcta:p.ops.find(o=>o.ok).t, ok}); });
   const correctas=porMod.reduce((s,m)=>s+m.correctas,0), total=E.preguntas.length;
   const pct=Math.round(correctas/total*100), aprobado=pct>=CONFIG.NOTA_MINIMA;
-  S.intentos=(S.intentos||0)+1; if(aprobado) S.aprobadoEl=new Date().toISOString(); guardar();
+  S.intentos=(S.intentos||0)+1; if(aprobado) S.aprobadoEl=new Date().toISOString();
   const datos=Object.assign({},S.usuario,{correctas,total,porcentaje:pct,aprobado,intento:S.intentos,
     minutos:Math.max(1,Math.round((Date.now()-E.inicio)/60000)), puntos:S.puntos, modulos:porMod, fallos, respuestas, fecha:new Date().toISOString(), venceEl:aprobado?venceEl(S.aprobadoEl):null,
     id:S.usuario.cedula+'-'+Date.now(), completas:S.completas, aprobadoEl:S.aprobadoEl});
+  if(aprobado) S.ultimaConst={nombre:datos.nombre, cedula:datos.cedula, cargo:datos.cargo, area:datos.area, porcentaje:pct, fecha:datos.fecha, venceEl:datos.venceEl, id:datos.id};
+  datos.ultimaConst=aprobado?S.ultimaConst:null;
+  guardar();
   pintarResultado(datos,porMod);
   enviar(datos);
   if(aprobado) confeti(3500);
+}
+function htmlConstancia(d){
+  return `<div class="constancia"><div class="cert">
+      <div class="ct-emp">TOP DRILLING COMPANY</div>
+      <div class="ct-dec">Este certificado hace constar que</div>
+      <div class="ct-onda">${ondaSVG()}<div class="ct-sello">${selloSVG()}<img src="${LOGO}" alt="Top Drilling Company"></div></div>
+      <div class="ct-nombre">${esc(d.nombre)}</div>
+      <div class="ct-cc">C.C. ${esc(d.cedula)}</div>
+      <div class="ct-comp">${esc(d.cargo)} · ${esc(d.area)} · completó y aprobó:</div>
+      <div class="ct-curso">Capacitación en Salud Ocupacional</div>
+      <div class="ct-temas">Conservación auditiva · Infecciones auditivas · Enfermedades endémicas · Infecciones de transmisión sexual · Conservación y salud visual · Prevención de adicciones · Estilos de vida saludables · Riesgo biomecánico · Reanimación cardiopulmonar</div>
+      <div class="ct-pie"><div>Calificación<b>${d.porcentaje}%</b></div><div>Fecha<b>${fechaLarga(d.fecha)}</b></div><div>Vigente hasta<b>${fechaLarga(d.venceEl)}</b></div><div>Programa<b>Gestión HSEQ</b></div></div>
+    </div></div><p class="ct-nota no-print">Vista previa. Use el botón “Descargar constancia (PDF)” para guardarla en su equipo. Una copia queda guardada en el archivo de HSEQ.</p>`;
+}
+function verConstancia(){
+  const d=S.ultimaConst; if(!d) return;
+  window._const=d;
+  document.getElementById('s-resultado').innerHTML=`
+    <div class="sec-tit"><h2>Mi constancia</h2><span>Aprobada el ${fechaLarga(d.fecha)} · vigente hasta el ${fechaLarga(d.venceEl)}</span></div>
+    ${htmlConstancia(d)}
+    <div class="acciones">
+      <button class="btn sec" id="btn-pdf" onclick="descargarConstancia()">${ico('imprimir')} Descargar constancia (PDF)</button>
+      <button class="btn" onclick="menu()">${ico('casa')} Volver al inicio</button>
+    </div>`;
+  show('s-resultado');
 }
 function pintarResultado(d,porMod){
   window._const=d;
@@ -1755,17 +1788,7 @@ function pintarResultado(d,porMod){
     </div>
     <h2 class="tit">Resultado por tema</h2>
     <div class="card">${porMod.filter(m=>m.total).map(m=>`<div class="rmod"><span class="n">${m.nombre}</span><span class="s ${m.correctas===m.total?'ok':'no'}">${m.correctas}/${m.total}</span></div>`).join('')}</div>
-    ${d.aprobado?`<div class="constancia"><div class="cert">
-      <div class="ct-emp">TOP DRILLING COMPANY</div>
-      <div class="ct-dec">Este certificado hace constar que</div>
-      <div class="ct-onda">${ondaSVG()}<div class="ct-sello">${selloSVG()}<img src="${LOGO}" alt="Top Drilling Company"></div></div>
-      <div class="ct-nombre">${esc(d.nombre)}</div>
-      <div class="ct-cc">C.C. ${esc(d.cedula)}</div>
-      <div class="ct-comp">${esc(d.cargo)} · ${esc(d.area)} · completó y aprobó:</div>
-      <div class="ct-curso">Capacitación en Salud Ocupacional</div>
-      <div class="ct-temas">Conservación auditiva · Infecciones auditivas · Enfermedades endémicas · Infecciones de transmisión sexual · Conservación y salud visual · Prevención de adicciones · Estilos de vida saludables · Riesgo biomecánico · Reanimación cardiopulmonar</div>
-      <div class="ct-pie"><div>Calificación<b>${d.porcentaje}%</b></div><div>Fecha<b>${fecha}</b></div><div>Vigente hasta<b>${fechaLarga(d.venceEl)}</b></div><div>Programa<b>Gestión HSEQ</b></div></div>
-    </div></div><p class="ct-nota no-print">Vista previa. Use el botón “Descargar constancia (PDF)” para guardarla en su equipo. Una copia queda guardada en el archivo de HSEQ.</p>`:''}
+    ${d.aprobado?htmlConstancia(d):''}
     <div class="acciones">
       ${d.aprobado?`<button class="btn sec" id="btn-pdf" onclick="descargarConstancia()">${ico('imprimir')} Descargar constancia (PDF)</button><button class="btn" onclick="menu()">${ico('casa')} Ir al inicio</button>`
         :`<button class="btn sec" onclick="menu()">${ico('repetir')} Repasar módulos</button><button class="btn oro" onclick="iniciarEval()">Intentar de nuevo</button>`}
