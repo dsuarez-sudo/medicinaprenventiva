@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Módulo de Capacitaciones en Salud · Gestión HSEQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--azul:#0f3557;--azul2:#1b5584;--fondo:#f2f5f8;--texto:#1d2b36;--gris:#5d6b78;--borde:#dde4ea;--ok:#1f9d55;--mal:#d64545;--r:16px;--c:#1b5584}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--fondo);color:var(--texto);line-height:1.6;-webkit-font-smoothing:antialiased}
+svg{display:block}
+.top{background:var(--azul);color:#fff;position:sticky;top:0;z-index:30;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.top-in{max-width:980px;margin:auto;display:flex;align-items:center;gap:12px;padding:10px 16px}
+.top img{height:36px;background:#fff;border-radius:8px;padding:3px 6px}
+.top .tt{font-weight:900;font-size:15px;line-height:1.2}
+.top .st{font-size:12px;opacity:.75}
+.top .user{margin-left:auto;font-size:12px;text-align:right;line-height:1.3;opacity:.95}
+.top .user a{color:#9cc9ef;cursor:pointer;text-decoration:underline}
+main{max-width:980px;margin:auto;padding:20px 16px 70px}
+.screen{display:none}.screen.on{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.hero{background:linear-gradient(135deg,var(--azul),var(--azul2));color:#fff;border-radius:var(--r);padding:28px 22px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero h1{margin:0 0 6px;font-size:clamp(22px,5vw,30px);line-height:1.2;font-weight:900}
+.hero p{margin:0;opacity:.92;max-width:640px}
+.card{background:#fff;border:1px solid var(--borde);border-radius:var(--r);padding:22px}
+.reg{max-width:520px;margin:auto}
+label{display:block;font-weight:800;font-size:14px;margin:14px 0 6px}
+input,select{width:100%;padding:12px 14px;border:1.5px solid var(--borde);border-radius:10px;font:inherit;font-size:16px;background:#fff;color:var(--texto)}
+input:focus,select:focus{outline:none;border-color:var(--azul2);box-shadow:0 0 0 3px rgba(27,85,132,.15)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:13px 20px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;background:var(--azul);color:#fff;transition:.15s;text-decoration:none}
+.btn svg{width:18px;height:18px}
+.btn:hover{filter:brightness(1.12)}
+.btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+.btn.sec{background:#e6edf3;color:var(--azul)}
+.btn.full{width:100%}
+.err{color:var(--mal);font-size:13px;min-height:18px;margin-top:8px;font-weight:700}
+.nota{font-size:13px;color:var(--gris)}
+.barra-prog{display:flex;align-items:center;gap:12px;margin:0 0 18px;background:#fff;border:1px solid var(--borde);border-radius:var(--r);padding:14px 18px}
+.barra-prog .pb{flex:1;height:10px;background:#e6edf3;border-radius:10px;overflow:hidden}
+.barra-prog .pb i{display:block;height:100%;background:var(--ok);border-radius:10px;transition:width .5s}
+.barra-prog b{font-size:14px;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.mod{background:#fff;border:1px solid var(--borde);border-radius:var(--r);padding:18px;display:flex;gap:14px;align-items:flex-start;cursor:pointer;transition:.18s;text-align:left;font:inherit;color:inherit;width:100%}
+.mod:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,53,87,.09)}
+.ico{width:54px;height:54px;border-radius:15px;display:grid;place-items:center;flex-shrink:0}
+.ico svg{width:30px;height:30px}
+.mod h3{margin:0 0 3px;font-size:16px;line-height:1.25;font-weight:800}
+.mod small{color:var(--gris);font-size:13px;line-height:1.4;display:block}
+.estado{margin-top:9px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:#eef2f5;color:var(--gris)}
+.estado svg{width:14px;height:14px}
+.estado.ok{background:#e3f5ea;color:var(--ok)}
+.eval-card{margin-top:18px;background:linear-gradient(135deg,#123f66,#0f3557);color:#fff;border-radius:var(--r);padding:22px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.eval-card .ico{background:rgba(255,255,255,.12);color:#fff}
+.eval-card h3{margin:0 0 4px;font-size:19px}
+.eval-card p{margin:0;opacity:.85;font-size:14px}
+.eval-card .txt{flex:1;min-width:220px}
+.eval-card .btn{background:#fff;color:var(--azul)}
+.mhead{border-radius:var(--r);padding:24px 22px;color:#fff;display:flex;gap:16px;align-items:center;margin-bottom:18px;position:relative;overflow:hidden}
+.mhead::after{content:"";position:absolute;right:-40px;bottom:-70px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.1)}
+.mhead .ico{background:rgba(255,255,255,.18);color:#fff;width:64px;height:64px}
+.mhead .ico svg{width:36px;height:36px}
+.mhead small{opacity:.85;font-weight:700;font-size:13px}
+.mhead h1{margin:2px 0 0;font-size:clamp(21px,4.6vw,28px);line-height:1.2;font-weight:900}
+.intro{font-size:17px;background:#fff;border-left:5px solid var(--c);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.sec{background:#fff;border:1px solid var(--borde);border-radius:var(--r);padding:20px 20px 16px;margin-bottom:14px}
+.sec h2{margin:0 0 10px;font-size:18px;display:flex;align-items:center;gap:10px;line-height:1.3}
+.sec h2 .bar{width:6px;height:22px;border-radius:4px;background:var(--c);flex-shrink:0}
+.sec p{margin:0 0 10px}
+.lista{list-style:none;padding:0;margin:4px 0 10px}
+.lista li{position:relative;padding-left:24px;margin-bottom:8px}
+.lista li::before{content:"";position:absolute;left:4px;top:9px;width:9px;height:9px;border-radius:50%;background:var(--c)}
+.pasos{list-style:none;padding:0;margin:6px 0 10px;counter-reset:p}
+.pasos li{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+.pasos .num{width:30px;height:30px;border-radius:50%;color:#fff;font-weight:900;display:grid;place-items:center;flex-shrink:0;font-size:14px;background:var(--c)}
+.pasos li div{padding-top:3px}
+.facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:6px 0 12px}
+.fact{background:#f7f9fb;border:1px solid var(--borde);border-top:4px solid var(--c);border-radius:12px;padding:12px 14px;font-size:14.5px}
+.fact b{display:block;margin-bottom:3px;font-size:15px}
+.tabla{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:14.5px}
+.tabla td{padding:9px 10px;border-bottom:1px solid var(--borde)}
+.tabla td:last-child{text-align:right;font-weight:800;white-space:nowrap}
+.tabla tr.peligro td:last-child{color:var(--mal)}
+.alerta{display:flex;gap:12px;background:#fff6e6;border:1px solid #f3d9a4;border-radius:12px;padding:12px 14px;margin:8px 0 10px;font-size:14.5px}
+.alerta svg{width:22px;height:22px;color:#c77d00;flex-shrink:0;margin-top:2px}
+.recuerde{display:flex;gap:14px;align-items:center;background:var(--c);color:#fff;border-radius:var(--r);padding:18px 20px;margin:18px 0}
+.recuerde svg{width:34px;height:34px;flex-shrink:0}
+.recuerde b{display:block;font-size:13px;text-transform:uppercase;letter-spacing:.06em;opacity:.85}
+.nav-mod{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-top:8px}
+.nav-mod .btn{flex:1;min-width:150px}
+.q-top{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:800;color:var(--gris);margin-bottom:8px}
+.q-pb{height:8px;background:#e6edf3;border-radius:8px;overflow:hidden;margin-bottom:18px}
+.q-pb i{display:block;height:100%;background:var(--azul2);transition:width .3s}
+.q-mod{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;padding:4px 10px;border-radius:20px;color:#fff;margin-bottom:10px}
+.q-mod svg{width:14px;height:14px}
+.q-txt{font-size:19px;font-weight:800;line-height:1.35;margin:0 0 16px}
+.ops{display:grid;gap:10px}
+.op{display:flex;gap:12px;align-items:center;text-align:left;width:100%;padding:14px 16px;border:2px solid var(--borde);border-radius:12px;background:#fff;font:inherit;font-size:15.5px;cursor:pointer;color:var(--texto);transition:.12s}
+.op:hover{border-color:#b8c7d4}
+.op .l{width:30px;height:30px;border-radius:50%;border:2px solid var(--borde);display:grid;place-items:center;font-weight:900;flex-shrink:0;font-size:13px;color:var(--gris)}
+.op.sel{border-color:var(--azul2);background:#eef5fb}
+.op.sel .l{background:var(--azul2);border-color:var(--azul2);color:#fff}
+.q-nav{display:flex;gap:10px;margin-top:20px}
+.q-nav .btn{flex:1}
+.res-top{text-align:center;padding:26px 20px}
+.ring{width:170px;height:170px;margin:0 auto 10px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .v{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:38px;font-weight:900;line-height:1.1}
+.ring .v small{display:block;font-size:12px;color:var(--gris);font-weight:700;margin-top:4px}
+.sello{display:inline-flex;align-items:center;gap:8px;font-weight:900;padding:8px 18px;border-radius:30px;font-size:16px;margin:6px 0}
+.sello svg{width:20px;height:20px}
+.sello.ok{background:#e3f5ea;color:var(--ok)}
+.sello.no{background:#fde8e8;color:var(--mal)}
+.envio{font-size:14px;font-weight:700;margin-top:10px;padding:10px 14px;border-radius:10px;background:#eef2f5;color:var(--gris);display:inline-block}
+.envio.ok{background:#e3f5ea;color:var(--ok)}
+.envio.mal{background:#fde8e8;color:var(--mal)}
+.rmod{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--borde);font-size:14.5px}
+.rmod:last-child{border-bottom:0}
+.rmod .n{flex:1;font-weight:700}
+.rmod .b{width:110px;height:8px;background:#e6edf3;border-radius:8px;overflow:hidden}
+.rmod .b i{display:block;height:100%}
+.rmod .s{width:42px;text-align:right;font-weight:900}
+.fallo{border-left:4px solid var(--mal);background:#fdf6f6;border-radius:10px;padding:12px 14px;margin-bottom:10px;font-size:14.5px}
+.fallo b{display:block;margin-bottom:4px}
+.fallo .c{color:var(--ok);font-weight:800}
+.fallo .t{color:var(--mal)}
+.constancia{border:2px dashed #b9c9d6;border-radius:var(--r);padding:20px;text-align:center;margin-top:14px}
+.constancia h3{margin:0 0 6px}
+.acciones{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.acciones .btn{flex:1;min-width:170px}
+h2.tit{font-size:18px;margin:22px 0 10px}
+@media (max-width:560px){
+  main{padding:14px 12px 60px}
+  .hero{padding:22px 18px}
+  .card,.sec{padding:16px}
+  .top .st{display:none}
+  .mhead{padding:20px 16px}
+  .mhead .ico{width:54px;height:54px}
+  .q-txt{font-size:17px}
+  .rmod .b{width:70px}
+  .intro{font-size:16px}
+}
+@media print{
+  .top,.acciones,.no-print{display:none!important}
+  body{background:#fff}
+  .screen{display:none!important}
+  #s-resultado{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <img src="logo.png" alt="" onerror="this.style.display='none'">
+    <div>
+      <div class="tt">Capacitaciones en Salud</div>
+      <div class="st">Gestión HSEQ · Top Drilling Company</div>
+    </div>
+    <div class="user" id="top-user"></div>
+  </div>
+</header>
+
+<main>
+
+  <!-- REGISTRO -->
+  <section class="screen" id="s-registro">
+    <div class="hero">
+      <h1>Módulo de capacitaciones en salud</h1>
+      <p>Revise los 9 temas a su ritmo y al final presente la evaluación. Sus resultados quedan registrados automáticamente.</p>
+    </div>
+    <div class="card reg">
+      <h2 style="margin:0 0 4px;font-size:20px">Registro del participante</h2>
+      <p class="nota" style="margin:0">Ingrese sus datos tal como aparecen en su documento.</p>
+      <label for="f-nombre">Nombre completo</label>
+      <input id="f-nombre" autocomplete="name" placeholder="Ej: Carlos Andrés Pérez Gómez">
+      <label for="f-cedula">Número de cédula</label>
+      <input id="f-cedula" inputmode="numeric" placeholder="Solo números">
+      <label for="f-cargo">Cargo</label>
+      <input id="f-cargo" placeholder="Ej: Cuñero, Encuellador, Supervisor HSEQ">
+      <label for="f-area">RIG / Área</label>
+      <select id="f-area">
+        <option value="">Seleccione…</option>
+        <option>RIG 2501</option>
+        <option>RIG 3001</option>
+        <option>Base / Oficina</option>
+        <option>Otro</option>
+      </select>
+      <div class="err" id="f-err"></div>
+      <button class="btn full" style="margin-top:8px" onclick="registrar()">Ingresar al módulo <span id="i-reg"></span></button>
+    </div>
+  </section>
+
+  <!-- MENÚ -->
+  <section class="screen" id="s-menu">
+    <div class="hero">
+      <h1 id="saludo">Bienvenido</h1>
+      <p>Abra cada tema, léalo completo y márquelo como visto. Cuando termine los 9 temas se habilita la evaluación final.</p>
+    </div>
+    <div class="barra-prog"><div class="pb"><i id="pb-mods"></i></div><b id="txt-mods"></b></div>
+    <div class="grid" id="grid-mods"></div>
+    <div class="eval-card">
+      <div class="ico" id="eval-ico"></div>
+      <div class="txt">
+        <h3>Evaluación final</h3>
+        <p id="eval-desc"></p>
+      </div>
+      <button class="btn" id="btn-eval" onclick="iniciarEval()">Presentar evaluación</button>
+    </div>
+  </section>
+
+  <!-- MÓDULO -->
+  <section class="screen" id="s-modulo"></section>
+
+  <!-- EVALUACIÓN -->
+  <section class="screen" id="s-eval">
+    <div class="card">
+      <div class="q-top"><span id="q-num"></span><span id="q-time"></span></div>
+      <div class="q-pb"><i id="q-pb"></i></div>
+      <div id="q-cont"></div>
+      <div class="q-nav">
+        <button class="btn sec" id="q-prev" onclick="navQ(-1)"></button>
+        <button class="btn" id="q-next" onclick="navQ(1)"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTADO -->
+  <section class="screen" id="s-resultado"></section>
+
+</main>
+
+<script>
+/* =========================================================
+   CONFIGURACIÓN — cambie solo estos valores
+   ========================================================= */
+const CONFIG = {
+  // Pegue aquí la URL de la aplicación web de Apps Script (termina en /exec)
+  URL_SCRIPT: 'PEGUE_AQUI_LA_URL_DE_APPS_SCRIPT',
+  NOTA_MINIMA: 80,          // porcentaje para aprobar
+  EXIGIR_MODULOS: true      // true = la evaluación se habilita solo al ver los 9 temas
+};
+
+/* ================= ÍCONOS DIBUJADOS ================= */
+const IC = {
+  oido:'<path d="M6 9.5a5 5 0 0 1 10 0c0 2.6-1.6 3.6-2.6 4.8-.9 1.1-.9 2.4-1.6 3.6A2.6 2.6 0 0 1 7.4 18"/><path d="M9 9.5a2 2 0 0 1 4 0c0 1.2-1.2 1.6-1.6 2.6"/><path d="M18.5 7.5c.8 1.3.8 3.7 0 5M21 5.5c1.6 2.5 1.6 6.5 0 9"/>',
+  infeccion:'<path d="M4 9.5a5 5 0 0 1 10 0c0 2.6-1.6 3.6-2.6 4.8-.9 1.1-.9 2.4-1.6 3.6A2.6 2.6 0 0 1 5.4 18"/><path d="M7 9.5a2 2 0 0 1 4 0c0 1.2-1.2 1.6-1.6 2.6"/><path d="M18.5 12.5c1.3 1.6 2.2 2.8 2.2 3.9a2.2 2.2 0 0 1-4.4 0c0-1.1.9-2.3 2.2-3.9z"/><path d="M17 6.5h4M19 4.5v4"/>',
+  mosquito:'<circle cx="12" cy="6.5" r="1.6"/><path d="M12 4.9V2"/><ellipse cx="12" cy="13.6" rx="1.7" ry="5"/><path d="M10.5 10C7 6.5 3 7.5 3.5 10s4.5 2 7 1M13.5 10c3.5-3.5 7.5-2.5 7 0s-4.5 2-7 1"/><path d="M10.5 13l-4 2-1.5 4M13.5 13l4 2 1.5 4M10.7 16.2l-2.7 3.6M13.3 16.2l2.7 3.6"/>',
+  escudo:'<path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/><path d="M12 15.5s-3.2-2-3.2-4.2a1.7 1.7 0 0 1 3.2-.8 1.7 1.7 0 0 1 3.2.8c0 2.2-3.2 4.2-3.2 4.2z"/>',
+  ojo:'<path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3.2"/><circle cx="13" cy="11" r=".7" fill="currentColor"/>',
+  adiccion:'<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/><rect x="7.5" y="9.6" width="9" height="4.8" rx="2.4" transform="rotate(-45 12 12)"/>',
+  manzana:'<path d="M12 7.5c-1.8-1.6-6.5-1.2-6.5 3.8 0 4 2.8 8.7 4.8 8.7.9 0 1.2-.5 1.7-.5s.8.5 1.7.5c2 0 4.8-4.7 4.8-8.7 0-5-4.7-5.4-6.5-3.8z"/><path d="M12 7.5c0-2 .8-3.6 2.8-4.3"/><path d="M12.6 5.4c1.5.2 2.6-.5 3-1.8-1.5-.2-2.6.5-3 1.8z"/>',
+  carga:'<circle cx="7.5" cy="4.5" r="1.8"/><path d="M7.5 7v5.5l-2.5 3.5-.5 4.5M7.5 12.5l2.5 3v5"/><path d="M7.5 8.5l5 3.5"/><rect x="12" y="10.5" width="8" height="6.5" rx="1"/><path d="M14.5 10.5v2.5h3v-2.5"/>',
+  rcp:'<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/><path d="M3 12.5h4l1.5-2.5 2.5 5 2-3.5h8"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  candado:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  lista:'<rect x="5.5" y="4.5" width="13" height="16.5" rx="2"/><path d="M9 4.5v-1h6v1M9 10h6M9 13.5h6M9 17h3.5"/>',
+  izq:'<path d="M15 5l-7 7 7 7"/>',
+  der:'<path d="M9 5l7 7-7 7"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  alerta:'<path d="M12 3.5l9 16h-18l9-16z"/><path d="M12 10v4.5M12 17.4v.1"/>',
+  idea:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/>',
+  ojoAbierto:'<path d="M3 12h18"/>',
+  repetir:'<path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15M4 20v-5h5"/>',
+  casa:'<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/>',
+  imprimir:'<path d="M7 9V3.5h10V9"/><rect x="3.5" y="9" width="17" height="8" rx="2"/><path d="M7 14h10v6.5H7z"/>',
+  reloj:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'
+};
+function ico(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[n]+'</svg>';}
+
+/* ================= CONTENIDO DE LOS MÓDULOS =================
+   En cada pregunta, la PRIMERA opción es la correcta.
+   El sistema las mezcla automáticamente al presentar la evaluación.
+   ============================================================ */
+const MODULOS = [
+{
+  titulo:'Conservación auditiva', resumen:'Ruido, pérdida auditiva y uso correcto de protectores.', color:'#1b6fae', icono:'oido',
+  intro:'El ruido es uno de los riesgos más comunes en los taladros y áreas operativas. La pérdida auditiva causada por ruido <b>es permanente</b>, pero también es <b>100 % prevenible</b>.',
+  secciones:[
+    {t:'¿Cómo escuchamos?', p:'El sonido entra por el oído externo, hace vibrar el tímpano y unos huesos muy pequeños del oído medio. En el oído interno (la cóclea) hay miles de <b>células ciliadas</b> que convierten esa vibración en señales para el cerebro.',
+     alerta:'El ruido intenso daña las células ciliadas y <b>estas no se regeneran</b>. Por eso la pérdida auditiva por ruido no tiene cura.'},
+    {t:'¿Cuándo el ruido es peligroso?', p:'El ruido se mide en decibeles (dB). A partir de <b>85 dB durante 8 horas</b> existe riesgo de daño. Por cada 3 dB adicionales, el tiempo seguro de exposición se reduce a la mitad.',
+     tabla:[['Conversación normal','60 dB'],['Tráfico pesado','80–85 dB'],['Exposición segura a 85 dB','8 horas'],['Exposición segura a 88 dB','4 horas'],['Exposición segura a 91 dB','2 horas'],['Motores, generadores, compresores y equipos de perforación','90–110 dB']],
+     li:['Prueba práctica: si tiene que <b>gritar para hablar</b> con alguien que está a un metro, el ruido probablemente supera 85 dB.']},
+    {t:'Efectos del ruido en la salud', facts:[['Hipoacusia','Pérdida de audición progresiva e irreversible.'],['Tinnitus','Zumbido o pitido constante en los oídos.'],['Comunicación','Dificultad para entender conversaciones, sobre todo con ruido de fondo.'],['Seguridad','No escuchar alarmas, radios o advertencias aumenta el riesgo de accidentes.'],['Otros efectos','Estrés, irritabilidad, fatiga, dolor de cabeza y alteraciones del sueño.']]},
+    {t:'Cómo protegerse', p:'Primero se controla el ruido en la fuente (mantenimiento, encerramientos, aislamiento). Los protectores auditivos son la última barrera y deben usarse <b>todo el tiempo</b> que esté expuesto.',
+     steps:['<b>Tapón de espuma:</b> enróllelo con los dedos limpios hasta dejarlo delgado.','Con la mano contraria, <b>hale la oreja hacia arriba y hacia atrás</b> para enderezar el conducto.','Introduzca el tapón y <b>sosténgalo 20 a 30 segundos</b> mientras se expande.','<b>Protector de copa:</b> debe cubrir toda la oreja y sellar bien. El cabello, gorras o patas de gafas gruesas debajo de la copa reducen la protección.','En zonas de ruido muy alto se usa <b>doble protección</b> (tapón + copa) cuando así lo indique HSEQ.'],
+     alerta:'Quitarse el protector solo unos minutos en una zona ruidosa reduce mucho la protección de toda la jornada.'},
+    {t:'Vigilancia de la salud auditiva', li:['Se realizan <b>audiometrías</b> de ingreso, periódicas y de retiro.','Antes de la audiometría debe cumplir el <b>reposo auditivo</b> indicado (generalmente 12 horas sin exposición a ruido).','Reporte a tiempo zumbidos, sensación de oído tapado o dificultad para escuchar.','Respete la señalización de <b>uso obligatorio de protección auditiva</b>.']}
+  ],
+  recuerde:'El daño auditivo no duele y avanza en silencio. Use su protector siempre que esté en zona de ruido.',
+  preguntas:[
+    {q:'¿A partir de qué nivel de ruido, en una jornada de 8 horas, existe riesgo de pérdida auditiva?', ops:['85 dB','60 dB','70 dB','120 dB']},
+    {q:'La pérdida auditiva causada por ruido es:', ops:['Permanente, pero se puede prevenir','Temporal y se recupera con descanso','Curable con gotas para los oídos','Un problema que solo afecta a mayores de 50 años']},
+    {q:'¿Cuál es la forma correcta de colocarse un tapón auditivo de espuma?', ops:['Enrollarlo, halar la oreja hacia arriba y atrás, insertarlo y sostenerlo unos segundos','Insertarlo sin enrollar, solo hasta la mitad','Dejarlo flojo para poder escuchar mejor la radio','Mojarlo con agua antes de ponerlo']}
+  ]
+},
+{
+  titulo:'Infecciones auditivas', resumen:'Otitis, higiene del oído y cuidado de los protectores.', color:'#2a8c8c', icono:'infeccion',
+  intro:'Los oídos también se enferman por infecciones. Muchas se deben a malos hábitos de higiene o al uso inadecuado de los protectores auditivos.',
+  secciones:[
+    {t:'Tipos más comunes', facts:[['Otitis externa','Infección del conducto auditivo. Se relaciona con humedad, rascado o uso de hisopos. También se llama “oído de nadador”.'],['Otitis media','Infección detrás del tímpano. Suele aparecer después de una gripa o infección respiratoria.'],['Otomicosis','Infección por hongos, favorecida por calor y humedad. Produce picazón intensa.']]},
+    {t:'Síntomas de alerta', li:['Dolor de oído','Picazón persistente','Secreción o mal olor','Sensación de oído tapado','Disminución de la audición','Fiebre, zumbido o mareo']},
+    {t:'Factores de riesgo en el trabajo', li:['Tapones sucios, reutilizados más de lo indicado o <b>compartidos</b>.','Ponerse los tapones con las manos sucias (grasa, lodo, químicos).','Calor y sudor acumulado dentro de las copas.','Entrada de agua al oído.','Limpiar el oído con hisopos, llaves, ganchos u otros objetos.']},
+    {t:'Prevención', steps:['<b>No introduzca objetos</b> en el oído. La cera (cerumen) protege el oído y sale sola.','Seque solo la parte externa de la oreja con una toalla limpia.','<b>Lávese las manos</b> antes de ponerse los tapones.','Tapones desechables: úselos solo durante el tiempo indicado. Tapones reutilizables: lávelos con agua y jabón suave, séquelos y guárdelos en su estuche.','<b>Nunca comparta</b> sus protectores auditivos.','Limpie las almohadillas de las copas y cámbielas si están rotas o endurecidas.']},
+    {t:'¿Qué hacer si tiene síntomas?', li:['Consulte al médico. <b>No se automedique</b> con gotas ni use remedios caseros (aceite, ajo, alcohol).','Informe al área de salud HSEQ, especialmente si la molestia le impide usar el protector.','Si tiene una infección, no use tapones de inserción hasta que el médico lo autorice; pida protector de copa.']}
+  ],
+  recuerde:'Manos limpias, protectores limpios y nada dentro del oído: así se previenen la mayoría de infecciones.',
+  preguntas:[
+    {q:'¿Cuál es una práctica correcta para prevenir infecciones al usar tapones auditivos?', ops:['Lavarse las manos antes de ponerlos y no compartirlos','Compartirlos si se ven limpios','Usar el mismo tapón desechable durante una semana','Guardarlos sueltos en el bolsillo del overol']},
+    {q:'El uso de hisopos para limpiar el conducto auditivo:', ops:['Puede lesionar el oído y empujar la cera, por eso se debe evitar','Es recomendable hacerlo todos los días','Es la mejor forma de evitar la otitis','Es seguro si el hisopo se moja en alcohol']},
+    {q:'Si presenta dolor de oído con secreción, lo correcto es:', ops:['Consultar al médico y reportarlo al área de salud','Aplicar aceite caliente o ajo','Usar las gotas que le sobraron a un compañero','Esperar a que pase solo y seguir usando tapones']}
+  ]
+},
+{
+  titulo:'Enfermedades endémicas', resumen:'Dengue, malaria, fiebre amarilla y otras enfermedades por vectores.', color:'#c0662b', icono:'mosquito',
+  intro:'Las enfermedades endémicas son las que están presentes de forma constante en una región. En las zonas cálidas y rurales de Colombia, donde operan los equipos, las más importantes son transmitidas por <b>mosquitos y otros insectos</b>.',
+  secciones:[
+    {t:'Principales enfermedades', facts:[['Dengue','Lo transmite el mosquito <i>Aedes aegypti</i>. Fiebre alta, dolor detrás de los ojos, dolor muscular y de articulaciones, manchas en la piel.'],['Chikungunya y Zika','Mismo mosquito del dengue. Chikungunya: dolor intenso de articulaciones. Zika: riesgo para el bebé durante el embarazo.'],['Malaria (paludismo)','Mosquito <i>Anopheles</i>, que pica al anochecer y en la noche. Fiebre con escalofríos y sudoración que se repiten.'],['Leishmaniasis','Picadura de un mosquito muy pequeño (flebótomo o “pito”). Produce una úlcera en la piel que no cicatriza.'],['Fiebre amarilla','Transmitida por mosquitos en zonas selváticas. Se previene con una <b>vacuna de dosis única</b>.']]},
+    {t:'Signos de alarma del dengue', p:'Si tiene fiebre y aparece alguno de estos signos, acuda a urgencias de inmediato:',
+     li:['Dolor abdominal intenso y continuo','Vómito persistente','Sangrado de encías, nariz o en la orina','Somnolencia, confusión o irritabilidad','Mareo intenso o desmayo']},
+    {t:'Cómo prevenirlas', steps:['<b>Elimine criaderos:</b> el mosquito del dengue pone sus huevos en agua estancada y limpia. Vacíe, lave y tape tanques, canecas, llantas, botellas y recipientes.','Use <b>repelente</b> en la piel expuesta y aplíquelo de nuevo según las indicaciones del producto.','Use <b>camisa de manga larga y pantalón</b>, sobre todo al amanecer y al atardecer.','Duerma con <b>toldillo</b> y mantenga anjeos en buen estado en campamentos.','Vacúnese contra la <b>fiebre amarilla</b> por lo menos 10 días antes de viajar a una zona de riesgo.']},
+    {t:'Si presenta síntomas', li:['Consulte de inmediato e informe que trabaja o viajó a zona endémica.','<b>No se automedique.</b> Si sospecha dengue, NO tome ibuprofeno, naproxeno, diclofenaco ni aspirina: aumentan el riesgo de sangrado.','Tome abundantes líquidos y suero de rehidratación oral.','Avise a su supervisor y al área de salud HSEQ.'],
+     alerta:'Ante fiebre en zona endémica, el diagnóstico temprano salva vidas.'}
+  ],
+  recuerde:'Sin criaderos no hay mosquitos: revise, vacíe y tape todo recipiente que acumule agua.',
+  preguntas:[
+    {q:'El mosquito que transmite el dengue, el chikungunya y el zika se reproduce principalmente en:', ops:['Agua estancada y limpia en recipientes','Ríos de corriente fuerte','Tierra seca','Basura orgánica seca']},
+    {q:'Si sospecha que tiene dengue, ¿qué medicamentos NO debe tomar sin indicación médica?', ops:['Ibuprofeno, diclofenaco o aspirina','Suero de rehidratación oral','Abundante agua','Ninguno, todos son seguros']},
+    {q:'¿Cuál de estas enfermedades se previene con una vacuna de dosis única?', ops:['Fiebre amarilla','Malaria','Leishmaniasis','Chikungunya']}
+  ]
+},
+{
+  titulo:'Infecciones de transmisión sexual', resumen:'ETS/ITS: tipos, transmisión, prevención y detección.', color:'#a33b6b', icono:'escudo',
+  intro:'Las infecciones de transmisión sexual (ITS, antes llamadas ETS) se transmiten principalmente por relaciones sexuales sin protección. <b>Muchas no producen síntomas</b>, por eso una persona puede tenerlas y transmitirlas sin saberlo.',
+  secciones:[
+    {t:'Principales infecciones', facts:[['VIH','Ataca las defensas del cuerpo. Sin tratamiento evoluciona a sida. Con tratamiento oportuno la persona puede llevar una vida normal.'],['Sífilis','Inicia con una llaga que no duele. Es curable con antibiótico.'],['Gonorrea y clamidia','Pueden causar secreción y ardor al orinar, o no dar síntomas. Son curables.'],['VPH (virus del papiloma humano)','Puede causar verrugas genitales y cáncer de cuello uterino. Existe vacuna.'],['Hepatitis B','Afecta el hígado. Existe vacuna.'],['Herpes genital','Ampollas dolorosas que reaparecen. Se controla, pero no se cura.']]},
+    {t:'¿Cómo se transmiten?', li:['Relaciones sexuales vaginales, anales u orales sin condón.','Contacto con sangre: agujas o cuchillas compartidas, tatuajes o perforaciones sin bioseguridad.','De la madre al bebé durante el embarazo, el parto o la lactancia.'],
+     alerta:'<b>No se transmiten</b> por abrazos, saludos, compartir baños, cubiertos, piscinas ni por picaduras de insectos. Nadie debe ser discriminado por vivir con una ITS.'},
+    {t:'Prevención', steps:['Use <b>condón</b> correctamente en cada relación, desde el inicio hasta el final.','Vacúnese contra el <b>VPH</b> y la <b>hepatitis B</b>.','Hágase <b>pruebas periódicas</b> de VIH, sífilis y hepatitis. Puede solicitarlas a través de su EPS.','Evite el consumo de alcohol o drogas que afecten sus decisiones.','No comparta agujas, cuchillas de afeitar ni cepillos de dientes.']},
+    {t:'Señales para consultar', li:['Secreción anormal por genitales','Ardor o dolor al orinar','Llagas, verrugas o ampollas en la zona genital','Picazón o dolor durante las relaciones','Ganglios inflamados en la ingle'],
+     p:'Consulte al médico, no se automedique y avise a su pareja para que también reciba tratamiento. El diagnóstico es <b>información médica confidencial</b>.'}
+  ],
+  recuerde:'Condón, vacunación y pruebas periódicas: las tres claves para protegerse y proteger a su pareja.',
+  preguntas:[
+    {q:'¿Cuál es el método más eficaz para prevenir las ITS durante las relaciones sexuales?', ops:['El condón usado correctamente desde el inicio hasta el final','Las pastillas anticonceptivas','Lavarse después de la relación','El método del retiro']},
+    {q:'¿Cuál de estas afirmaciones es correcta?', ops:['Muchas ITS no dan síntomas, por eso son importantes las pruebas','Las ITS siempre producen síntomas visibles','Las ITS se transmiten por compartir el baño','El VIH se transmite por abrazos o saludos']},
+    {q:'¿Cuáles infecciones de transmisión sexual se pueden prevenir con vacuna?', ops:['VPH y hepatitis B','VIH y sífilis','Gonorrea y clamidia','Herpes y VIH']}
+  ]
+},
+{
+  titulo:'Conservación y salud visual', resumen:'Protección ocular, pantallas y primeros auxilios en ojos.', color:'#2b7a4b', icono:'ojo',
+  intro:'Los ojos están expuestos a partículas, químicos, radiación solar, soldadura y largas jornadas frente a pantallas. La mayoría de lesiones oculares en el trabajo <b>se pueden prevenir</b> con la protección adecuada.',
+  secciones:[
+    {t:'Riesgos para los ojos', facts:[['Partículas','Esmerilado, corte, perforación y polvo levantado por el viento.'],['Químicos','Salpicaduras de lodos, aditivos, ácidos o combustibles.'],['Radiación','Rayos UV del sol y luz intensa de la soldadura.'],['Iluminación','Poca luz, reflejos o deslumbramiento fuerzan la vista.'],['Pantallas','Ojo seco, ardor, visión borrosa y dolor de cabeza (síndrome visual informático).']]},
+    {t:'Protección ocular', li:['Use <b>gafas de seguridad</b> siempre en el área operativa; con filtro UV cuando trabaje al sol.','Use <b>monogafas</b> cuando manipule químicos o haya mucho polvo.','Para esmerilar: <b>careta facial + gafas</b>.','Para soldar: careta de soldador con el filtro adecuado.','Mantenga sus gafas limpias y cámbielas si están rayadas o rotas.','Si usa lentes formulados, solicite gafas de seguridad formuladas o sobre-gafas.']},
+    {t:'Si trabaja con pantallas', steps:['Aplique la <b>regla 20-20-20</b>: cada 20 minutos mire algo a unos 6 metros de distancia durante 20 segundos.','Parpadee conscientemente para evitar el ojo seco.','Ubique la pantalla a la distancia de un brazo y con el borde superior a la altura de los ojos o un poco más abajo.','Evite reflejos de ventanas o lámparas sobre la pantalla.']},
+    {t:'Primeros auxilios en los ojos', facts:[['Polvo o partícula suelta','No se frote. Parpadee y lave con agua limpia.'],['Objeto incrustado','<b>No lo retire.</b> Cubra ambos ojos sin presionar y busque atención médica.'],['Químicos','Lave de inmediato en el lavaojos o ducha <b>mínimo 15 minutos</b> con los párpados abiertos. Retire lentes de contacto y consulte.'],['Golpe','Aplique compresas frías sin presionar y consulte.']]},
+    {t:'Vigilancia visual', li:['Realícese el examen de optometría de ingreso y los periódicos.','No use gotas para los ojos sin fórmula médica.','Reporte visión borrosa, ardor frecuente o dolor de cabeza constante.']}
+  ],
+  recuerde:'Sus ojos no tienen repuesto: gafas de seguridad puestas en todo momento dentro del área operativa.',
+  preguntas:[
+    {q:'¿En qué consiste la regla 20-20-20 para quienes trabajan con pantallas?', ops:['Cada 20 minutos mirar algo a unos 6 metros durante 20 segundos','Trabajar 20 minutos y descansar 20 minutos','Aplicarse 20 gotas en cada ojo al día','Usar la pantalla a 20 centímetros de los ojos']},
+    {q:'Si le cae una sustancia química en los ojos, debe:', ops:['Lavarlos con abundante agua mínimo 15 minutos con los párpados abiertos','Frotarlos para retirar el químico','Cerrarlos y esperar a que pase','Aplicar leche o gotas comerciales']},
+    {q:'Si un objeto queda incrustado en el ojo, lo correcto es:', ops:['No retirarlo, cubrir ambos ojos y buscar atención médica','Retirarlo con unas pinzas','Frotar suavemente hasta que salga','Lavar con agua a presión']}
+  ]
+},
+{
+  titulo:'Prevención de adicciones', resumen:'Alcohol, tabaco y sustancias psicoactivas en el trabajo.', color:'#6a4fb3', icono:'adiccion',
+  intro:'El consumo de alcohol, tabaco y sustancias psicoactivas (SPA) afecta la salud, la familia y la seguridad. En actividades de alto riesgo como la perforación, <b>un error por consumo puede costar vidas</b>.',
+  secciones:[
+    {t:'¿Qué es una adicción?', p:'Es una enfermedad en la que la persona pierde el control sobre el consumo, aunque le traiga consecuencias negativas. Suele empezar con un consumo ocasional, “solo para relajarse”.',
+     facts:[['Tolerancia','Necesitar cada vez más cantidad para sentir el mismo efecto.'],['Abstinencia','Malestar físico o emocional cuando se deja de consumir.'],['Dependencia','La sustancia se vuelve el centro de la vida de la persona.']]},
+    {t:'Sustancias y sus efectos', facts:[['Alcohol','Disminuye reflejos, coordinación y capacidad de juicio. Sus efectos pueden continuar al día siguiente (guayabo).'],['Tabaco y vapeadores','La nicotina es muy adictiva. Causa cáncer y enfermedades del corazón y los pulmones.'],['Marihuana','Altera la percepción, la memoria y el tiempo de reacción.'],['Cocaína y basuco','Estimulantes que pueden causar arritmias, infarto y paranoia.'],['Medicamentos sin fórmula','Tranquilizantes y analgésicos fuertes generan dependencia y somnolencia.']]},
+    {t:'Consumo y seguridad en el trabajo', li:['Aumenta el riesgo de accidentes graves para usted y sus compañeros.','Genera ausentismo, bajo rendimiento y conflictos.','Conozca y cumpla la <b>Política de prevención del consumo de alcohol, tabaco y sustancias psicoactivas</b> de la empresa.','Está prohibido presentarse bajo efectos de alcohol o SPA y consumirlos en las instalaciones. Se pueden realizar pruebas de alcohol y drogas.'],
+     alerta:'Si un compañero está bajo efectos de alcohol o drogas, <b>no permita que opere equipos</b> e informe al supervisor. No es “sapear”: es cuidar su vida y la de todos.'},
+    {t:'Señales de alerta', li:['Cambios bruscos de comportamiento o irritabilidad','Llegadas tarde y ausencias frecuentes','Aislamiento de compañeros y familia','Problemas económicos constantes','Olor a alcohol, ojos rojos, descuido personal']},
+    {t:'Factores protectores y cómo pedir ayuda', li:['Deporte, pasatiempos y tiempo de calidad con la familia.','Manejo adecuado del estrés y aprender a decir “no”.','Si usted o alguien cercano tiene un problema de consumo, busque apoyo en su <b>EPS</b>, la <b>ARL</b> o el área de salud HSEQ.'],
+     p:'Pedir ayuda no es debilidad: es el primer paso para recuperar el control.'}
+  ],
+  recuerde:'Cero alcohol y cero drogas en el trabajo. Llegar en condiciones seguras es responsabilidad de todos.',
+  preguntas:[
+    {q:'Si nota que un compañero llega bajo efectos del alcohol a operar un equipo, lo correcto es:', ops:['Informar al supervisor para que no opere el equipo','Dejarlo trabajar para no meterlo en problemas','Darle café para que se le pase','Ignorar la situación']},
+    {q:'El alcohol consumido la noche anterior:', ops:['Puede seguir afectando reflejos, atención y coordinación al día siguiente','No tiene ningún efecto al día siguiente','Mejora la concentración en el trabajo','Solo es un riesgo si se consume dentro de la empresa']},
+    {q:'En una adicción, la “tolerancia” significa:', ops:['Necesitar cada vez más cantidad para sentir el mismo efecto','Poder dejar de consumir sin ninguna dificultad','Aguantar más horas de trabajo','Que la sustancia ya no hace daño']}
+  ]
+},
+{
+  titulo:'Estilos de vida saludables', resumen:'Alimentación, actividad física, sueño y manejo del estrés.', color:'#3f8f2f', icono:'manzana',
+  intro:'Los hábitos de cada día determinan el riesgo de enfermedades como hipertensión, diabetes, obesidad y enfermedades del corazón. La buena noticia: <b>la mayoría se pueden prevenir</b>.',
+  secciones:[
+    {t:'Alimentación balanceada', p:'Use el modelo del <b>plato saludable</b>:',
+     facts:[['½ plato','Verduras y frutas de varios colores.'],['¼ plato','Proteína: pollo, pescado, huevo, carne magra, fríjol o lenteja.'],['¼ plato','Cereales y tubérculos, preferiblemente integrales: arroz, papa, yuca, plátano.']],
+     li:['Reduzca sal, azúcar, frituras, gaseosas y productos de paquete.','Prefiera alimentos preparados en casa, asados, al horno o cocidos.','<b>Hidrátese</b> con agua durante toda la jornada, sin esperar a tener sed, sobre todo en clima caliente.']},
+    {t:'Actividad física', li:['Realice <b>al menos 150 minutos a la semana</b> de actividad moderada (por ejemplo, 30 minutos, 5 días).','Caminar a paso rápido, montar bicicleta, nadar o bailar cuentan.','Haga <b>pausas activas</b> durante la jornada.','Evite pasar muchas horas seguidas sentado.']},
+    {t:'Descanso y sueño', li:['Un adulto necesita entre <b>7 y 9 horas</b> de sueño.','En turnos nocturnos o rotativos: duerma en una habitación oscura, silenciosa y fresca.','Evite cafeína, bebidas energizantes y pantallas antes de dormir.'],
+     alerta:'La somnolencia es un riesgo de accidente tan serio como el consumo de alcohol. Si no descansó, repórtelo.'},
+    {t:'Salud mental y manejo del estrés', li:['Identifique qué le genera estrés y hable de ello.','Practique respiración profunda: inhale en 4 segundos, sostenga 4 y exhale en 6.','Dedique tiempo a su familia, amigos y actividades que disfrute.','Si se siente desbordado, busque apoyo en su EPS o en el área de salud.']},
+    {t:'Controles de salud', li:['Conozca sus cifras: presión arterial, azúcar en sangre, colesterol, peso y perímetro de cintura.','Asista a sus exámenes médicos ocupacionales y a los controles de su EPS.','No fume y modere el consumo de alcohol.']}
+  ],
+  recuerde:'Coma mejor, muévase más, duerma bien y conozca sus cifras: pequeños cambios diarios suman años de vida.',
+  preguntas:[
+    {q:'¿Cuánta actividad física se recomienda como mínimo a un adulto?', ops:['Al menos 150 minutos semanales de actividad moderada','15 minutos a la semana','Solo es necesaria si hay sobrepeso','Con las labores del trabajo es suficiente']},
+    {q:'Según el modelo del plato saludable, la mitad del plato debe ser:', ops:['Verduras y frutas','Arroz y harinas','Carnes','Alimentos fritos']},
+    {q:'¿Cuántas horas de sueño necesita un adulto?', ops:['Entre 7 y 9 horas','Entre 4 y 5 horas','Más de 12 horas','No importa si toma café']}
+  ]
+},
+{
+  titulo:'Riesgo biomecánico', resumen:'Posturas, cargas, movimientos repetitivos e higiene postural.', color:'#b5822a', icono:'carga',
+  intro:'El riesgo biomecánico está relacionado con las posturas, los movimientos repetitivos, la fuerza y la manipulación de cargas. Puede causar <b>desórdenes musculoesqueléticos (DME)</b>, una de las principales causas de enfermedad laboral en Colombia.',
+  secciones:[
+    {t:'Factores de riesgo', facts:[['Posturas forzadas','Agachado, arrodillado, con el tronco girado o los brazos por encima de los hombros.'],['Posturas prolongadas','Mucho tiempo de pie o sentado sin cambiar de posición.'],['Movimientos repetitivos','El mismo movimiento muchas veces durante la jornada.'],['Manipulación de cargas','Levantar, empujar, halar o transportar objetos pesados.'],['Vibración','Herramientas manuales y maquinaria.']]},
+    {t:'Lesiones más frecuentes', li:['Lumbalgia (dolor de espalda baja) y hernia discal','Dolor de cuello (cervicalgia)','Tendinitis y lesión del manguito rotador (hombro)','Epicondilitis (codo)','Síndrome del túnel carpiano (muñeca y mano)'],
+     alerta:'Las señales tempranas son dolor, hormigueo, adormecimiento, rigidez o pérdida de fuerza. <b>Repórtelas a tiempo</b>: tratadas al inicio se evitan lesiones crónicas.'},
+    {t:'Levantamiento seguro de cargas', steps:['<b>Evalúe la carga:</b> peso, forma y agarre. Si pesa más de 25 kg o es difícil de manejar, pida ayuda o use ayudas mecánicas.','Separe los pies al ancho de los hombros, uno un poco adelante.','<b>Flexione rodillas y caderas</b> manteniendo la espalda recta.','Agarre firme con toda la mano y <b>acerque la carga al cuerpo</b>.','Levante con la fuerza de las piernas, sin tirones.','<b>No gire el tronco</b> con la carga: gire con los pies.','Para dejar la carga, repita el proceso flexionando las rodillas.']},
+    {t:'Higiene postural', li:['Alterne posturas y evite permanecer mucho tiempo en la misma posición.','Mantenga herramientas y materiales al alcance, sin estirarse ni agacharse en exceso.','Use carretillas, polipastos y equipos de izaje (operados por personal autorizado).','Sentado: pies apoyados, espalda apoyada en el espaldar y codos cerca de 90°.','Realice <b>pausas activas</b> de 5 a 10 minutos con estiramientos varias veces en la jornada.']}
+  ],
+  recuerde:'Las piernas levantan, la espalda se mantiene recta y la carga va pegada al cuerpo.',
+  preguntas:[
+    {q:'Al levantar una carga desde el piso, lo correcto es:', ops:['Flexionar las rodillas, mantener la espalda recta y la carga cerca del cuerpo','Doblar la espalda con las piernas rectas','Levantar con los brazos extendidos lejos del cuerpo','Girar el tronco mientras levanta']},
+    {q:'Si debe cambiar de dirección mientras carga un objeto:', ops:['Debe girar con los pies, sin torcer el tronco','Debe girar la cintura rápidamente','Debe lanzar la carga hacia el lugar de destino','Debe hacerlo sin importar la postura']},
+    {q:'Sentir hormigueo y adormecimiento en las manos al final de la jornada:', ops:['Puede ser una señal temprana de un desorden musculoesquelético y se debe reportar','Es normal y se debe ignorar','Se soluciona tomando analgésicos por cuenta propia','Se corrige trabajando más rápido']}
+  ]
+},
+{
+  titulo:'Reanimación cardiopulmonar (RCP)', resumen:'Cadena de supervivencia, compresiones y uso del DEA.', color:'#c23b3b', icono:'rcp',
+  intro:'En un paro cardiaco el corazón deja de bombear sangre. Cada minuto sin ayuda disminuye la probabilidad de sobrevivir. <b>Iniciar RCP de inmediato puede duplicar o triplicar las posibilidades de vida</b>.',
+  secciones:[
+    {t:'Cadena de supervivencia', steps:['<b>Reconocer</b> el paro y pedir ayuda (activar el sistema de emergencias).','<b>RCP inmediata</b> con énfasis en compresiones de calidad.','<b>Desfibrilación rápida</b> con un DEA (desfibrilador externo automático).','<b>Atención médica avanzada</b> por personal de salud.','<b>Cuidados posteriores</b> y recuperación.']},
+    {t:'Paso a paso en un adulto', steps:['<b>Verifique que la escena sea segura</b> para usted y para la víctima.','<b>Valore si responde:</b> tóquela en los hombros y pregúntele en voz alta “¿Está bien?”.','<b>Pida ayuda:</b> llame al 123 o active el plan de emergencias del RIG y pida que traigan el DEA.','<b>Verifique la respiración</b> observando el pecho por no más de 10 segundos. Si no respira o solo jadea (boqueo), inicie RCP.','<b>Posición de las manos:</b> talón de una mano en el centro del pecho (mitad inferior del esternón), la otra mano encima, brazos rectos y hombros sobre las manos.','<b>Comprima fuerte y rápido:</b> 5 a 6 cm de profundidad, a un ritmo de 100 a 120 por minuto. Deje que el pecho vuelva a su posición después de cada compresión.','Si está entrenado: <b>30 compresiones y 2 ventilaciones</b> (inclinando la cabeza y elevando el mentón). Si no lo está, haga solo compresiones continuas.']},
+    {t:'Uso del DEA', steps:['Enciéndalo y <b>siga las instrucciones de voz</b>.','Descubra y seque el pecho. Pegue los parches como indica el dibujo.','Durante el análisis y la descarga, <b>nadie debe tocar a la víctima</b>.','Después de la descarga (o si no se indica), <b>reanude las compresiones de inmediato</b>.']},
+    {t:'¿Hasta cuándo continuar?', li:['Hasta que la persona responda o respire normalmente.','Hasta que llegue personal de salud y asuma la atención.','Hasta que usted esté agotado o la escena se vuelva insegura.','Si hay otro reanimador, <b>túrnense cada 2 minutos</b> para mantener la calidad de las compresiones.'],
+     facts:[['Ritmo','100–120 compresiones por minuto'],['Profundidad','5–6 cm en adultos'],['Relación','30 compresiones : 2 ventilaciones'],['Pausas','Lo más cortas posible (menos de 10 s)']]}
+  ],
+  recuerde:'Ante una persona que no responde y no respira: llame, pida el DEA y comprima fuerte y rápido en el centro del pecho.',
+  preguntas:[
+    {q:'¿A qué ritmo se deben realizar las compresiones torácicas en un adulto?', ops:['Entre 100 y 120 por minuto','Entre 60 y 80 por minuto','Entre 140 y 160 por minuto','30 por minuto']},
+    {q:'¿Qué profundidad deben tener las compresiones en un adulto?', ops:['Entre 5 y 6 centímetros','Entre 1 y 2 centímetros','Más de 10 centímetros','Solo apoyar las manos sin presionar']},
+    {q:'¿Qué es lo primero que debe hacer al encontrar a una persona inconsciente?', ops:['Verificar que la escena sea segura','Darle agua','Iniciar las ventilaciones de inmediato','Moverla a otro lugar lejano']}
+  ]
+}
+];
+
+/* ================= ESTADO ================= */
+const CLAVE = 'hseq_salud_modulo_v1';
+let S = {usuario:null, vistos:[], intentos:0, pendientes:[]};
+function cargar(){ try{ const d = JSON.parse(localStorage.getItem(CLAVE)); if(d) S = Object.assign(S, d); }catch(e){} }
+function guardar(){ try{ localStorage.setItem(CLAVE, JSON.stringify(S)); }catch(e){} }
+function esc(t){ return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on')); document.getElementById(id).classList.add('on'); window.scrollTo(0,0); }
+function mezclar(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+
+/* ================= REGISTRO ================= */
+function registrar(){
+  const n = document.getElementById('f-nombre').value.trim().replace(/\s+/g,' ');
+  const c = document.getElementById('f-cedula').value.replace(/\D/g,'');
+  const g = document.getElementById('f-cargo').value.trim();
+  const a = document.getElementById('f-area').value;
+  const err = document.getElementById('f-err');
+  if(n.split(' ').length < 2){ err.textContent = 'Escriba su nombre y apellido.'; return; }
+  if(c.length < 5){ err.textContent = 'Escriba un número de cédula válido.'; return; }
+  if(!g){ err.textContent = 'Escriba su cargo.'; return; }
+  if(!a){ err.textContent = 'Seleccione su RIG o área.'; return; }
+  S = {usuario:{nombre:n, cedula:c, cargo:g, area:a}, vistos:[], intentos:0, pendientes:S.pendientes||[]};
+  guardar(); menu();
+}
+function cambiarUsuario(){
+  if(!confirm('¿Desea salir? Se borrará el avance guardado en este dispositivo.')) return;
+  const p = S.pendientes; S = {usuario:null, vistos:[], intentos:0, pendientes:p}; guardar();
+  pintarUsuario(); show('s-registro');
+}
+function pintarUsuario(){
+  const el = document.getElementById('top-user');
+  el.innerHTML = S.usuario ? esc(S.usuario.nombre.split(' ')[0])+'<br><a onclick="cambiarUsuario()">Cambiar usuario</a>' : '';
+}
+
+/* ================= MENÚ ================= */
+function menu(){
+  pintarUsuario();
+  document.getElementById('saludo').textContent = 'Hola, ' + S.usuario.nombre.split(' ')[0];
+  const v = S.vistos.length, t = MODULOS.length;
+  document.getElementById('pb-mods').style.width = (v/t*100)+'%';
+  document.getElementById('txt-mods').textContent = v+' de '+t+' temas vistos';
+  document.getElementById('grid-mods').innerHTML = MODULOS.map((m,i)=>{
+    const ok = S.vistos.includes(i);
+    return `<button class="mod" onclick="abrir(${i})">
+      <div class="ico" style="background:${m.color}1a;color:${m.color}">${ico(m.icono)}</div>
+      <div><h3>${i+1}. ${m.titulo}</h3><small>${m.resumen}</small>
+      <span class="estado ${ok?'ok':''}">${ok?ico('check')+'Visto':'Pendiente'}</span></div></button>`;
+  }).join('');
+  const listo = !CONFIG.EXIGIR_MODULOS || v===t;
+  const b = document.getElementById('btn-eval');
+  b.disabled = !listo;
+  document.getElementById('eval-ico').innerHTML = ico(listo?'lista':'candado');
+  const nq = MODULOS.reduce((s,m)=>s+m.preguntas.length,0);
+  document.getElementById('eval-desc').textContent = listo
+    ? nq+' preguntas de todos los temas. Para aprobar necesita mínimo '+CONFIG.NOTA_MINIMA+' %.'
+    : 'Se habilita cuando termine los '+t+' temas. Le faltan '+(t-v)+'.';
+  show('s-menu');
+}
+
+/* ================= MÓDULO ================= */
+function seccion(s){
+  let h = `<section class="sec"><h2><span class="bar"></span>${s.t}</h2>`;
+  if(s.p) [].concat(s.p).forEach(x=> h+=`<p>${x}</p>`);
+  if(s.tabla) h+=`<table class="tabla">`+s.tabla.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')+`</table>`;
+  if(s.facts) h+=`<div class="facts">`+s.facts.map(f=>`<div class="fact"><b>${f[0]}</b>${f[1]}</div>`).join('')+`</div>`;
+  if(s.li) h+=`<ul class="lista">`+s.li.map(x=>`<li>${x}</li>`).join('')+`</ul>`;
+  if(s.steps) h+=`<ol class="pasos">`+s.steps.map((x,i)=>`<li><span class="num">${i+1}</span><div>${x}</div></li>`).join('')+`</ol>`;
+  if(s.alerta) h+=`<div class="alerta">${ico('alerta')}<div>${s.alerta}</div></div>`;
+  return h+`</section>`;
+}
+function abrir(i){
+  const m = MODULOS[i], el = document.getElementById('s-modulo');
+  el.style.setProperty('--c', m.color);
+  const ult = i === MODULOS.length-1;
+  el.innerHTML = `
+    <div class="mhead" style="background:linear-gradient(135deg,${m.color},${m.color}cc)">
+      <div class="ico">${ico(m.icono)}</div>
+      <div><small>Tema ${i+1} de ${MODULOS.length}</small><h1>${m.titulo}</h1></div>
+    </div>
+    <div class="intro">${m.intro}</div>
+    ${m.secciones.map(seccion).join('')}
+    <div class="recuerde">${ico('idea')}<div><b>Recuerde</b>${m.recuerde}</div></div>
+    <div class="nav-mod">
+      <button class="btn sec" onclick="menu()">${ico('izq')} Volver al menú</button>
+      <button class="btn" style="background:${m.color}" onclick="visto(${i})">${ult?'Terminar tema':'Marcar como visto y seguir'} ${ico('der')}</button>
+    </div>`;
+  show('s-modulo');
+}
+function visto(i){
+  if(!S.vistos.includes(i)){ S.vistos.push(i); guardar(); }
+  const sig = MODULOS.findIndex((_,k)=>!S.vistos.includes(k));
+  if(sig === -1) menu(); else abrir(sig);
+}
+
+/* ================= EVALUACIÓN ================= */
+let E = null;
+function iniciarEval(){
+  const preguntas = [];
+  MODULOS.forEach((m,mi)=> m.preguntas.forEach(p=>{
+    const ops = mezclar(p.ops.map((t,k)=>({t, ok:k===0})));
+    preguntas.push({mi, q:p.q, ops});
+  }));
+  E = {preguntas:mezclar(preguntas), resp:[], i:0, inicio:Date.now()};
+  show('s-eval'); pintarQ();
+  clearInterval(window._reloj);
+  window._reloj = setInterval(()=>{
+    const s = Math.floor((Date.now()-E.inicio)/1000);
+    document.getElementById('q-time').innerHTML = String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  },1000);
+}
+function pintarQ(){
+  const p = E.preguntas[E.i], m = MODULOS[p.mi], n = E.preguntas.length;
+  document.getElementById('q-num').textContent = 'Pregunta '+(E.i+1)+' de '+n;
+  document.getElementById('q-pb').style.width = ((E.i+1)/n*100)+'%';
+  document.getElementById('q-cont').innerHTML = `
+    <span class="q-mod" style="background:${m.color}">${ico(m.icono)} ${m.titulo}</span>
+    <p class="q-txt">${p.q}</p>
+    <div class="ops">${p.ops.map((o,k)=>`<button class="op ${E.resp[E.i]===k?'sel':''}" onclick="elegir(${k})"><span class="l">${'ABCD'[k]}</span>${o.t}</button>`).join('')}</div>`;
+  const prev = document.getElementById('q-prev'), next = document.getElementById('q-next');
+  prev.innerHTML = ico('izq')+' Anterior'; prev.style.visibility = E.i===0?'hidden':'visible';
+  next.innerHTML = E.i===n-1 ? 'Finalizar evaluación '+ico('check') : 'Siguiente '+ico('der');
+  next.disabled = E.resp[E.i]===undefined;
+}
+function elegir(k){ E.resp[E.i]=k; pintarQ(); }
+function navQ(d){
+  if(d>0 && E.resp[E.i]===undefined) return;
+  if(d>0 && E.i===E.preguntas.length-1){ finalizar(); return; }
+  E.i += d; pintarQ(); window.scrollTo(0,0);
+}
+
+/* ================= RESULTADO ================= */
+function finalizar(){
+  clearInterval(window._reloj);
+  const porMod = MODULOS.map(m=>({nombre:m.titulo, correctas:0, total:0}));
+  const fallos = [];
+  E.preguntas.forEach((p,i)=>{
+    const ok = p.ops[E.resp[i]].ok;
+    porMod[p.mi].total++; if(ok) porMod[p.mi].correctas++;
+    else fallos.push({tema:MODULOS[p.mi].titulo, q:p.q, tu:p.ops[E.resp[i]].t, bien:p.ops.find(o=>o.ok).t});
+  });
+  const correctas = porMod.reduce((s,m)=>s+m.correctas,0), total = E.preguntas.length;
+  const pct = Math.round(correctas/total*100), aprobado = pct >= CONFIG.NOTA_MINIMA;
+  S.intentos = (S.intentos||0)+1; guardar();
+  const minutos = Math.max(1, Math.round((Date.now()-E.inicio)/60000));
+  const datos = Object.assign({}, S.usuario, {
+    correctas, total, porcentaje:pct, aprobado, intento:S.intentos, minutos,
+    modulos:porMod, fallos:fallos.map(f=>f.q), fecha:new Date().toISOString()
+  });
+  pintarResultado(datos, porMod, fallos);
+  enviar(datos);
+}
+function pintarResultado(d, porMod, fallos){
+  const r = 70, C = 2*Math.PI*r, col = d.aprobado?'#1f9d55':'#d64545';
+  const fecha = new Date().toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('s-resultado').innerHTML = `
+    <div class="card res-top">
+      <div class="ring"><svg viewBox="0 0 160 160"><circle cx="80" cy="80" r="${r}" fill="none" stroke="#e6edf3" stroke-width="14"/>
+        <circle id="arco" cx="80" cy="80" r="${r}" fill="none" stroke="${col}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" style="transition:stroke-dashoffset 1.2s ease"/></svg>
+        <div class="v"><div>${d.porcentaje}%<small>${d.correctas} de ${d.total} correctas</small></div></div></div>
+      <div class="sello ${d.aprobado?'ok':'no'}">${ico(d.aprobado?'check':'x')} ${d.aprobado?'APROBÓ':'NO APROBÓ'}</div>
+      <p class="nota" style="margin:6px 0 0">${d.aprobado?'¡Felicitaciones! Completó el módulo de capacitaciones en salud.':'Necesita mínimo '+CONFIG.NOTA_MINIMA+' %. Repase los temas y vuelva a intentarlo.'}</p>
+      <div class="envio" id="envio">Enviando resultado…</div>
+    </div>
+    <h2 class="tit">Resultado por tema</h2>
+    <div class="card">${porMod.map((m,i)=>{const p=m.correctas/m.total;return `<div class="rmod"><span class="n">${m.nombre}</span><span class="b"><i style="width:${p*100}%;background:${MODULOS[i].color}"></i></span><span class="s">${m.correctas}/${m.total}</span></div>`}).join('')}</div>
+    ${fallos.length?`<h2 class="tit no-print">Preguntas para repasar</h2><div class="no-print">${fallos.map(f=>`<div class="fallo"><b>${f.q}</b><div class="t">Su respuesta: ${f.tu}</div><div class="c">Correcta: ${f.bien}</div></div>`).join('')}</div>`:''}
+    ${d.aprobado?`<div class="constancia"><h3>Constancia de participación</h3><p style="margin:0">${esc(d.nombre)} · C.C. ${esc(d.cedula)}<br>${esc(d.cargo)} · ${esc(d.area)}<br>Módulo de capacitaciones en salud · Gestión HSEQ<br><b>Calificación: ${d.porcentaje}%</b> · ${fecha}</p></div>`:''}
+    <div class="acciones">
+      ${d.aprobado?`<button class="btn sec" onclick="window.print()">${ico('imprimir')} Imprimir / guardar PDF</button>`:`<button class="btn" onclick="menu()">${ico('repetir')} Repasar los temas</button><button class="btn sec" onclick="iniciarEval()">Intentar de nuevo</button>`}
+      ${d.aprobado?`<button class="btn" onclick="menu()">${ico('casa')} Ir al inicio</button>`:''}
+    </div>`;
+  show('s-resultado');
+  requestAnimationFrame(()=>setTimeout(()=>{document.getElementById('arco').style.strokeDashoffset = C*(1-d.porcentaje/100);},80));
+}
+
+/* ================= ENVÍO A GOOGLE SHEETS ================= */
+function urlLista(){ return CONFIG.URL_SCRIPT && CONFIG.URL_SCRIPT.indexOf('/exec') > -1; }
+function post(datos){
+  return fetch(CONFIG.URL_SCRIPT, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(datos)});
+}
+function estadoEnvio(txt, cls){ const e=document.getElementById('envio'); if(e){ e.textContent=txt; e.className='envio '+(cls||''); } }
+function enviar(datos){
+  if(!urlLista()){ estadoEnvio('Resultado no enviado: falta configurar la URL de Apps Script.','mal'); return; }
+  post(datos).then(()=> estadoEnvio('Resultado registrado correctamente.','ok'))
+    .catch(()=>{ S.pendientes.push(datos); guardar(); estadoEnvio('Sin conexión. Se enviará automáticamente la próxima vez que abra el módulo con internet.','mal'); });
+}
+function reenviarPendientes(){
+  if(!urlLista() || !S.pendientes || !S.pendientes.length) return;
+  const lista = S.pendientes.slice(); S.pendientes = []; guardar();
+  lista.forEach(d=> post(d).catch(()=>{ S.pendientes.push(d); guardar(); }));
+}
+
+/* ================= INICIO ================= */
+document.getElementById('i-reg').innerHTML = ico('der');
+cargar(); reenviarPendientes();
+if(S.usuario) menu(); else { pintarUsuario(); show('s-registro'); }
+</script>
+</body>
+</html>
